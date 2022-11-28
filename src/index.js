@@ -39,3 +39,37 @@ import {
     video
 } from "./util/HTMLclass.js";
 
+import { axios } from "axios";
+
+function assert(boolValue, assertionError) {
+    if (!boolValue) {
+        throw new Error(assertionError);
+    }
+    return true;
+}
+
+class Parser {
+    constructor(url) {
+        this.url = (url !== undefined && url !== null) ? url : "";
+    }
+
+    GenerateElements() {
+        assert(this.url !== undefined && this.url !== null, `Invalid link. Expected URL, got ${typeof this.url}`);
+        return new Promise((resolve, reject) => {
+            axios.get(queryURL).then(res => {
+                let body = res.data;
+
+                // Extract elements from HTML document data
+                let elements = [];
+
+
+                // Once generated .. resolve elements
+                resolve(elements);
+            })
+                .catch(err => {
+                    console.error(err);
+                    reject(err);
+                });
+        });
+    }
+}
