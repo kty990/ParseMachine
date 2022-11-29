@@ -41,7 +41,7 @@ const {
     title,
     _var,
     video
-} = require("./util/HTMLclass.js");
+} = require("./util/typedef.js");
 
 const referenceTable_htmlClass = {
     "div":DIV,
