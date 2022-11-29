@@ -11,7 +11,7 @@ Current release: v0.0.0
 
 # Dependencies
 
-- n/a
+- axios (v1.2+)
 
 # Contact
 [Discord](https://discord.gg/7YbWnNpsU5)
