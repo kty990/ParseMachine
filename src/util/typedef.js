@@ -461,7 +461,7 @@ class video {
     }
 }
 
-export {
+module.exports = {
     DIV,
     a,
     span,
