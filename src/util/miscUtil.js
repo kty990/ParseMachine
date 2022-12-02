@@ -1,5 +1,5 @@
 const tags_required = {
-    "DIV": 2,
+    "div": 2,
     "a": 2,
     "span": 2,
     "h1": 2,
@@ -89,8 +89,8 @@ function GetEndingTagNames() {
     return temp
 }
 
-function GetNumberOfTags() {
-    return -1; // if this is returned there is an error
+function GetNumberOfTags(tagName) {
+    return tags_required[tagName] || -1;
 }
 
 module.exports = {GetEndingTagNames, GetNumberOfTags};
