@@ -84,7 +84,7 @@ const referenceTable_htmlClass = {
     "video":video
 }
 
-// const { ending_tags } = require("./util/miscUtil.js");
+const { GetEndingTagNames, GetNumberOfTags } = require("./util/miscUtil.js");
 
 const axios = require('axios');
 
@@ -136,6 +136,14 @@ class Parser {
         })
     }
 
+    isEndingTag(elem) {
+        let ending_tags = GetEndingTagNames();
+        return {
+            'tag': "",
+            'boolean': false
+        }
+    }
+
     GenerateElements() {
         assert(this.url !== undefined && this.url !== null, `Invalid link. Expected URL, got ${typeof this.url}`);
         return new Promise(async (resolve, reject) => {
@@ -146,6 +154,8 @@ class Parser {
                 let scoped_elements = [];
                 let scope_level = 0; // increment/decrement with child levels
                 let last_at_scope = {}; // ie. "1": div <Object>, "2": h1 <Object> ...
+
+                let ending_tags = GetEndingTagNames()
 
                 let x = 0;
                 while (x < raw_elements.length) {
@@ -160,7 +170,7 @@ class Parser {
                             console.log(`- ${elem_data['unsuccessful'].join("\n- ")}`);
                         }
                     } else {
-                        if (ending_tags[isEnding['tag']] > 1) {
+                        if (GetNumberOfTags(isEnding['tag']) > 1) {
                             scope_level++;
                             scoped_elements.push(element);
                         } else {
