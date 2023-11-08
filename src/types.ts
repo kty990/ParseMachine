@@ -14,9 +14,16 @@ class Stack {
         this.root = new _Node();
     }
 
-    add(value: any) {
-        let tmp = nee _Node(value,null,this.root);
-        
+    add(value: any): void {
+        let tmp = new _Node(value,null,this.root);
+        this.root.prev = tmp;
+    }
+
+    pop(): _Node {
+        let tmp = this.root;
+        this.root.nxt.prev = null;
+        this.root = this.root.nxt;
+        return tmp;
     }
 }
 
