@@ -17,7 +17,18 @@ class OutOfBoundsException extends Error {
     }
 }
 
-class Stack {
+class MismatchError extends Error {
+    constructor(...values) {
+        for (let x = 0; x < values.length; x++) {
+            // ALL LOGIC BEFORE IF STATEMENT
+            if (x < values.length - 1) {
+                // comma
+            }
+        }
+    }
+}
+
+export class Stack {
     constructor() {
         this.root = new _Node();
         this.size = 0;
@@ -157,6 +168,13 @@ export class Element {
         }
         this.children = children;
     }
+
+    static requiresClosingTag(tagName) {
+        const element = document.createElement(tagName);
+        let tmp = !element.void;
+        element = null;
+        return tmp;
+    }
 }
 
 interface result {
@@ -171,11 +189,22 @@ export class Scraper {
         let separator = /[<>]/;
         let splitString = HTMLBody.split(separator);
         let r = { MAX_DEPTH: 0, tree: [] };
+        let tmpTagStack = new Stack();
         for (let a of splitString) {
             if (html5Elements.indexOf(a) != -1) {
                  // Opening or solo tag
+                 if (Element.requiresClosingTag(a)) {
+                     // Opening tag
+                     tmpTagStack.add(a);
+                 } else {
+                     // Solo tag
+                 }
             } else if (html5Elements.indexOf(a.replace("/","")) != -1) {
                  // Closing tag
+                 let tmp = tmpTagStack.pop();
+                 if (tmp.data != a) {
+                     throw new MismatchError(tmp.data, a);
+                 }
             } else {
                  // innerHTML such as textContent and children, likely not a child
             }
