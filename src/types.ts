@@ -9,18 +9,33 @@ class _Node {
     }
 }
 
+class OutOfBoundsException extends Error {
+    static id: number = 1;
+    constructor(msg: string = `An out of bounds error occurred.`) {
+         super(`${msg} ~ ID: ${this.id}`);
+         this.id++;
+    }
+}
+
 class Stack {
     constructor() {
         this.root = new _Node();
+        this.size = 0;
     }
 
     add(value: any): void {
         let tmp = new _Node(value,null,this.root);
         this.root.prev = tmp;
+        this.size++;
     }
 
     pop(): _Node {
         // Add check for out of bounds
+        if (this.size > 0) {
+            this.size--;
+        } else {
+            throw new OutOfBoundsException();
+        }
         let tmp = this.root;
         this.root.nxt.prev = null;
         this.root = this.root.nxt;
