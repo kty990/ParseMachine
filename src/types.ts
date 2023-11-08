@@ -125,10 +125,16 @@ export class Scraper {
     static run(HTMLBody: string): result {
         let separator = /[<>]/;
         let splitString = HTMLBody.split(separator);
-        let result = { MAX_DEPTH: 0, tree: [] };
+        let r = { MAX_DEPTH: 0, tree: [] };
         for (let a of splitString) {
-
+            if (html5Elements.indexOf(a) != -1) {
+                 // Opening or solo tag
+            } else if (html5Elements.indexOf(a.replace("/","")) != -1) {
+                 // Closing tag
+            } else {
+                 // innerHTML such as textContent and children, likely not a child
+            }
         }
-        return result;
+        return r; 
     }
 }
