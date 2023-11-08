@@ -32,6 +32,9 @@ class MismatchError extends Error {
 }
 
 export class Stack {
+    root: _Node;
+    size: number;
+
     constructor() {
         this.root = new _Node();
         this.size = 0;
@@ -198,9 +201,20 @@ export class Scraper {
                  // Opening or solo tag
                  if (Element.requiresClosingTag(a)) {
                      // Opening tag
-                     tmpTagStack.add(a);
+                     tmpTagStack.add({name: a, children: []});
                  } else {
                      // Solo tag
+                     if (tmpTagStack.size > 0) {
+                         let tmp = a.split(" ");
+                         for (let attr of tmp) {
+                             let v = attr.split('=');
+                             switch (v) {
+                                 case 'id':
+                                    // PLACEHOLDER
+                             }
+                         }
+                         tmpTagStack.root.data.children.push(new Element(PARSED));
+                     }
                  }
             } else if (html5Elements.indexOf(a.replace("/","")) != -1) {
                  // Closing tag
