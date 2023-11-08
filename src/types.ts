@@ -1,3 +1,25 @@
+class _Node {
+    data: any;
+    prev: _Node;
+    nxt: _Node;
+    constructor(data: any, prev: _Node | undefined | null, nxt: _Node | undefined | null) {
+        this.data = data;
+        this.prev = prev;
+        this.nxt = nxt;
+    }
+}
+
+class Stack {
+    constructor() {
+        this.root = new _Node();
+    }
+
+    add(value: any) {
+        let tmp = nee _Node(value,null,this.root);
+        
+    }
+}
+
 export const html5Elements = [
     "DOCTYPE html",
     "html",
