@@ -20,6 +20,7 @@ class Stack {
     }
 
     pop(): _Node {
+        // Add check for out of bounds
         let tmp = this.root;
         this.root.nxt.prev = null;
         this.root = this.root.nxt;
