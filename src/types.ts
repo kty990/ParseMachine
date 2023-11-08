@@ -19,12 +19,15 @@ class OutOfBoundsException extends Error {
 
 class MismatchError extends Error {
     constructor(...values) {
+        let msg = `Mismatched tags. Expected tags of same type, got `;
         for (let x = 0; x < values.length; x++) {
             // ALL LOGIC BEFORE IF STATEMENT
+            msg += `${values[x]}`;
             if (x < values.length - 1) {
-                // comma
+                msg += ", ";
             }
         }
+        super(msg);
     }
 }
 
