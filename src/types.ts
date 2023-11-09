@@ -1,7 +1,16 @@
 import { JSDOM } from 'jsdom';
+import * as util from 'util';
 
 export const { window } = new JSDOM('<!doctype html><html><body></body></html>');
 export const document = window._document;
+
+export function tabTimes(n: number) {
+    let tmp = "";
+    for (let i = 0; i < n; i++) {
+        tmp += "\t";
+    }
+    return tmp;
+}
 
 class _Node {
     data: any;
@@ -33,6 +42,14 @@ class MismatchError extends Error {
         }
         super(msg);
     }
+}
+
+export function displayDictionary(dict: {}): string {
+    let tmp = "";
+    for (const [key, value] of Object.entries(dict)) {
+        tmp += `${key}=${value} `
+    }
+    return tmp;
 }
 
 export class Stack {
@@ -172,15 +189,18 @@ export class Element {
     text: string;
     attributes: {} = {};
     children: Array<Element>;
+    depth: number;
 
-    constructor(name: string, id: string, classes: Array<string>, text: string, attrs: Array<any>, children: Array<Element>) {
+    constructor(name: string, id: string, classes: Array<string>, text: string, attrs: Array<any>, depth: number = 1, children: Array<Element>) {
         try {
             this.name = name;
             this.id = id;
             this.classes = classes;
             this.text = text;
+            this.depth = depth;
             for (const attr of attrs) {
                 let tmp = attr.split("=");
+                if (tmp.length == 1) continue;
                 console.log(tmp);
                 this.attributes[tmp[0]] = tmp[1];
             }
@@ -203,11 +223,124 @@ export class Element {
         // Check if the tag is in the list of void tags
         return voidTags.indexOf(tag) == -1;
     }
+
+    [util.inspect.custom]() {
+        // return {
+        //     toString() {
+
+        //     }
+        // };
+        let result = `<${this.name} ${(this.id.length > 0) ? this.id + " " : ''}${(this.classes.length > 0) ? this.classes.join(" ") + " " : ''}${(Array.from(Object.values(this.attributes)).length > 0) ? displayDictionary(this.attributes) + " " : ''}>`
+        if (Element.requiresClosingTag(this.name)) {
+            result += "\n";
+            let cString = this.children.map((c: Element) => c.toString()).join(`\n`);
+            result += cString;
+            result += `\n${tabTimes(this.depth - 1)}</${this.name}>`;
+        }
+        return result;
+    }
+
+    toString(): string {
+        let result = `<${this.name} ${(this.id.length > 0) ? this.id + " " : ''}${(this.classes.length > 0) ? this.classes.join(" ") + " " : ''}${(Array.from(Object.values(this.attributes)).length > 0) ? displayDictionary(this.attributes) + " " : ''}>`
+        if (Element.requiresClosingTag(this.name)) {
+            result += "\n";
+            let cString = this.children.map((c: Element) => c.toString()).join(`\n`);
+            result += cString;
+            result += `\n${tabTimes(this.depth - 1)}</${this.name}>`;
+        }
+        return result;
+    }
+}
+
+export class Tree {
+    data: Array<Element> = [];
+
+    constructor(tree: Array<Element> | null) {
+        if (tree) {
+            this.data = tree;
+        }
+    }
+
+    getElementByID(id: string) {
+        const searchChildren = (element: Element) => {
+            for (let child of element.children) {
+                if (child.id == id) {
+                    return child;
+                } else {
+                    return searchChildren(child);
+                }
+            }
+            return null;
+        }
+        for (let element of this.data) {
+            if (element.id == id) {
+                return element;
+            } else {
+                let result = searchChildren(element);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        return null;
+    }
+
+    getElementsByClassName(clss: string) {
+        let elements: Array<Element> = [];
+        const searchChildren = (element: Element) => {
+            let tmpElements: Array<Element> = [];
+            for (let child of element.children) {
+                if (child.classes.indexOf(clss) != -1) {
+                    tmpElements.push(child);
+                } else {
+                    return searchChildren(child);
+                }
+            }
+            return tmpElements;
+        }
+        for (let element of this.data) {
+            if (element.classes.indexOf(clss) != -1) {
+                elements.push(element);
+            } else {
+                let result = searchChildren(element);
+                if (result != null) {
+                    elements.push(result);
+                }
+            }
+        }
+        return elements;
+    }
+
+    getElementsByTagName(name: string) {
+        let elements: Array<Element> = [];
+        const searchChildren = (element: Element) => {
+            let tmpElements: Array<Element> = [];
+            for (let child of element.children) {
+                if (child.name == name) {
+                    tmpElements.push(child);
+                } else {
+                    return searchChildren(child);
+                }
+            }
+            return tmpElements;
+        }
+        for (let element of this.data) {
+            if (element.name = name) {
+                elements.push(element);
+            } else {
+                let result = searchChildren(element);
+                if (result != null) {
+                    elements.push(result);
+                }
+            }
+        }
+        return elements;
+    }
 }
 
 interface result {
     MAX_DEPTH: number,
-    tree: Array<Element>;
+    tree: Tree;
 }
 
 export class Scraper {
@@ -218,7 +351,7 @@ export class Scraper {
         let separator = /[<>]/;
         let splitString = HTMLBody.split(separator);
         console.log(splitString);
-        let r: result = { MAX_DEPTH: 0, tree: [] };
+        let r: result = { MAX_DEPTH: 0, tree: new Tree(null) };
         let depth = 0;
         let tmpTagStack = new Stack();
 
@@ -275,7 +408,7 @@ export class Scraper {
                                         attrs.push(attr);
                                 }
                             }
-                            tmpTagStack.root!.data.children.push(new Element(a, id, classes, text, attrs, children));
+                            tmpTagStack.root!.data.children.push(new Element(a, id, classes, text, attrs, depth, children));
                         }
                     }
                 } else if (html5Elements.indexOf(a.replace("/", "")) != -1) {
@@ -286,9 +419,9 @@ export class Scraper {
                         throw new MismatchError(tmp.data.name, a);
                     }
                     if (tmpTagStack.size != 0) {
-                        tmpTagStack.root!.data.children.push(new Element(tmp.data.name, tmp.data.id, tmp.data.classes, tmp.data.text, tmp.data.attrs, tmp.data.children));
+                        tmpTagStack.root!.data.children.push(new Element(tmp.data.name, tmp.data.id, tmp.data.classes, tmp.data.text, tmp.data.attrs, depth, tmp.data.children));
                     } else {
-                        r.tree.push(new Element(tmp.data.name, tmp.data.id, tmp.data.classes, tmp.data.text, tmp.data.attrs, tmp.data.children))
+                        r.tree.data.push(new Element(tmp.data.name, tmp.data.id, tmp.data.classes, tmp.data.text, tmp.data.attrs, depth, tmp.data.children))
                     }
                     depth--;
                 } else {
