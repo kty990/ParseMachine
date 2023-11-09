@@ -228,14 +228,7 @@ export class Element {
 
         //     }
         // };
-        let result = `<${this.name} ${(this.id.length > 0) ? this.id + " " : ''}${(this.classes.length > 0) ? this.classes.join(" ") + " " : ''}${(Array.from(Object.values(this.attributes)).length > 0) ? displayDictionary(this.attributes) + " " : ''}>`
-        if (Element.requiresClosingTag(this.name)) {
-            result += "\n";
-            let cString = this.children.map((c: Element) => c.toString()).join(`\n`);
-            result += cString;
-            result += `\n${tabTimes(this.depth - 1)}</${this.name}>`;
-        }
-        return result;
+        return this.toString();
     }
 
     toString(): string {
