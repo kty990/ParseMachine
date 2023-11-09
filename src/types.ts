@@ -69,7 +69,6 @@ export class Stack {
     }
 
     pop(): _Node {
-        console.log(this.root);
         // Add check for out of bounds
         if (this.size > 0) {
             this.size--;
@@ -201,7 +200,6 @@ export class Element {
             for (const attr of attrs) {
                 let tmp = attr.split("=");
                 if (tmp.length == 1) continue;
-                console.log(tmp);
                 this.attributes[tmp[0]] = tmp[1];
             }
             this.children = children;
@@ -347,10 +345,8 @@ export class Scraper {
     constructor() { }
 
     static run(HTMLBody: string): result {
-        console.log(HTMLBody);
         let separator = /[<>]/;
         let splitString = HTMLBody.split(separator);
-        console.log(splitString);
         let r: result = { MAX_DEPTH: 0, tree: new Tree(null) };
         let depth = 0;
         let tmpTagStack = new Stack();
@@ -361,15 +357,12 @@ export class Scraper {
                 let a = x.trim();
                 debug = a;
                 if (a.replace("\\n", "").replace("\n", "").length == 0 || a.indexOf("!--") != -1) continue;
-                console.log(tmpTagStack);
-                console.log(`a: ${a}`);
                 if (html5Elements.indexOf(a.split(" ")[0]) != -1 || a == '!DOCTYPE html') {
 
                     // Opening or solo tag
                     depth++;
                     if (Element.requiresClosingTag(a.split(" ")[0]) && a != '!DOCTYPE html') {
                         // Opening tag
-                        console.log("OPEN");
                         let tmp = a.split(" ");
                         let id: string = "", classes: Array<string> = [], text: string = "", attrs: Array<any> = [], children = [];
 
@@ -392,7 +385,6 @@ export class Scraper {
 
                     } else {
                         // Solo tag
-                        console.log("SOLO");
                         depth--;
                         let id: string = "", classes: Array<string> = [], text: string = "", attrs: Array<any> = [], children = [];
                         if (tmpTagStack.size != 0) {
@@ -413,7 +405,6 @@ export class Scraper {
                     }
                 } else if (html5Elements.indexOf(a.replace("/", "")) != -1) {
                     // Closing tag
-                    console.log("CLOSE");
                     let tmp = tmpTagStack.pop();
                     if (tmp.data.name.replace("/", "") != a.replace("/", "")) {
                         throw new MismatchError(tmp.data.name, a);
@@ -431,7 +422,6 @@ export class Scraper {
                     r.MAX_DEPTH = depth;
                 }
             }
-            console.log(r);
         } catch (e) {
             console.error(e);
             console.log(r);
