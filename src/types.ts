@@ -80,7 +80,7 @@ export class Stack {
             this.root!.nxt!.prev = null;
             this.root = this.root!.nxt;
         } catch (e) {
-            this.root = new _Node(null, null, null);
+            this.root = new _Node(null, null, null); // Try with this line removed
         }
         return tmp!;
     }
