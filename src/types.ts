@@ -398,6 +398,7 @@ export class Scraper {
                     }
                 } else if (html5Elements.indexOf(a.replace("/", "")) != -1) {
                     // Closing tag
+                    depth--;
                     let tmp = tmpTagStack.pop();
                     if (tmp.data.name.replace("/", "") != a.replace("/", "")) {
                         throw new MismatchError(tmp.data.name, a);
@@ -407,7 +408,6 @@ export class Scraper {
                     } else {
                         r.tree.data.push(new Element(tmp.data.name, tmp.data.id, tmp.data.classes, tmp.data.text, tmp.data.attrs, depth, tmp.data.children))
                     }
-                    depth--;
                 } else {
                     tmpTagStack.root!.data.text = a;
                 }
