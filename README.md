@@ -17,7 +17,7 @@ This is a lightweight HTML parser that parses an HTML page and represents it as 
 ## Usage
 
 1. Include the src/`types.js` file in your project.
-2. Run types.`Scraper#run` passing the HTML content as the only argument
+2. Run types.[`Scraper#run`](https://github.com/kty990/ParseMachine/blob/main/src/types.ts#L216) passing the HTML content as the only argument
 
 
 # Dependencies
