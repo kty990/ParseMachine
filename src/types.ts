@@ -284,7 +284,7 @@ export class Tree {
                 if (child.classes.indexOf(clss) != -1) {
                     tmpElements.push(child);
                 } else {
-                    return searchChildren(child);
+                    tmpElements.push(...searchChildren(child));
                 }
             }
             return tmpElements;
@@ -295,7 +295,7 @@ export class Tree {
             } else {
                 let result = searchChildren(element);
                 if (result != null) {
-                    elements.push(result);
+                    elements.push(...result);
                 }
             }
         }
@@ -310,7 +310,7 @@ export class Tree {
                 if (child.name == name) {
                     tmpElements.push(child);
                 } else {
-                    return searchChildren(child);
+                    tmpElements.push(...searchChildren(child));
                 }
             }
             return tmpElements;
@@ -321,7 +321,7 @@ export class Tree {
             } else {
                 let result = searchChildren(element);
                 if (result != null) {
-                    elements.push(result);
+                    elements.push(...result);
                 }
             }
         }
